@@ -4,7 +4,7 @@ Core Stack:
 - Database: Supabase (PostgreSQL) ✅
 - Auth: Supabase Auth (built-in)
   UI/UX:
-- Styling: Tailwind CSS ✅ + shadcn/ui (or Radix UI primitives) ⬆️
+- Styling: Tailwind CSS ✅ + @headlessui/react ✅ + shadcn/ui (or Radix UI primitives) ⬆️
 - Icons: Lucide React ✅
 - Forms: React Hook Form + Zod (validation) ✅
   Data Fetching:

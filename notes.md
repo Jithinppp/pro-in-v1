@@ -66,3 +66,24 @@ app/
 │ └── [id]/page.tsx
 ├── scan/page.tsx
 └── maintenance/page.tsx
+
+## Reusable Components for PROIN:
+
+Form Elements:
+
+- Input - text, email, password fields ✅
+- Button - primary, secondary, destructive variants ✅
+- Select / Dropdown - for enums (status, role, condition) ✅
+- Textarea - for descriptions, notes ✅
+- Checkbox / Switch - boolean toggles ✅
+- RadioGroup - single selection
+- DatePicker - dates (start/end, purchase date) ✅
+- Badge - status pills (AVAILABLE, RESERVED, etc.) ✅
+- Card - container for content ✅
+- Toast / Alert - success/error messages ✅
+- LoadingSpinner - async states ✅
+- Modal - confirmations, forms ✅
+  Data:
+- Pagination - table pagination ✅
+- SearchInput - with debounce ✅
+- FilterBar - multi-filter controls ✅
