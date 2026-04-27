@@ -50,16 +50,9 @@
 
 #### Storage Locations
 
-- [ ] Location CRUD
-- [ ] Hierarchical view (Zone → Rack → Bin)
-- [ ] Inline edit buttons (always visible)
-
-#### Venues
-
-- [ ] Venue CRUD
-- [ ] Venue list view for PM
-
----
+- [x] Location CRUD with confirmation modal for delete
+- [x] Hierarchical view (Zone → Rack → Bin)
+- [x] Inline edit buttons (always visible) and edit mode is on a modal
 
 ### Phase 2: Assets & Consumables
 
@@ -98,6 +91,11 @@
 - [ ] Project CRUD
 - [ ] Client & venue selection
 - [ ] Timing fields (load-in, show, load-out)
+
+#### Venues
+
+- [ ] Venue CRUD
+- [ ] Venue list view for PM
 
 #### Reservations
 

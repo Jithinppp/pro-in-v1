@@ -15,10 +15,12 @@ interface SelectProps {
   placeholder?: string;
   error?: string;
   loading?: boolean;
+  disabled?: boolean;
 }
 
-export function Select({ label, options, value = "", onChange, placeholder, error, loading }: SelectProps) {
+export function Select({ label, options, value = "", onChange, placeholder, error, loading, disabled }: SelectProps) {
   const selected = options.find((opt) => opt.value === value);
+  const isDisabled = loading || disabled;
 
   return (
     <div className="w-full">
@@ -27,21 +29,21 @@ export function Select({ label, options, value = "", onChange, placeholder, erro
           {label}
         </label>
       )}
-      <Listbox value={value} onChange={onChange} disabled={loading}>
+      <Listbox value={value} onChange={onChange} disabled={isDisabled}>
         <div className="relative">
           <Listbox.Button
             className={({ focus }) => `
               relative w-full cursor-pointer rounded-lg bg-white py-2.5 pl-4 pr-10 text-left 
               border border-[#e4e4e7] text-sm transition-all duration-200
               focus:outline-none
-              ${loading ? "opacity-50 cursor-not-allowed" : ""}
+              ${isDisabled ? "opacity-50 cursor-not-allowed" : ""}
               ${focus ? "focus:border-[#a1a1aa] focus:ring-0 focus:shadow-[0_0_0_2px_rgba(161,161,170,0.3),rgba(19,19,22,0.7)_0px_1px_5px_-4px,rgba(34,42,53,0.05)_0px_4px_8px_0px]" : ""}
               ${error ? "border-red-500" : ""}
               ${focus && error ? "focus:shadow-[0_0_0_2px_rgba(239,68,68,0.4),rgba(19,19,22,0.7)_0px_1px_5px_-4px,rgba(34,42,53,0.05)_0px_4px_8px_0px]" : ""}
             `}
           >
             <span className={`block truncate ${selected ? "text-[#242424]" : "text-[#a1a1aa]"}`}>
-              {loading ? "Loading..." : (selected?.label || (options.length === 0 ? "No items" : placeholder) || "Select...")}
+              {isDisabled && options.length === 0 ? "Loading..." : (selected?.label || (options.length === 0 ? "No items" : placeholder) || "Select...")}
             </span>
             <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3">
               {loading ? (

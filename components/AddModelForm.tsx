@@ -135,8 +135,9 @@ export function AddModelForm({ onSuccess }: AddModelFormProps) {
       return;
     }
 
-    reset({ specs: [{ key: "", value: "" }] });
+    reset({ subcategory_id: "", code: "", brand: "", name: "", specs: [{ key: "", value: "" }] });
     setSelectedCategory("");
+    setSubcategories([]);
     setIsLoading(false);
     router.refresh();
     onSuccess?.();

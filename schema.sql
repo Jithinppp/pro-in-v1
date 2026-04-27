@@ -44,6 +44,13 @@ CREATE TABLE public.subcategories (
     created_at timestamptz DEFAULT now()
 );
 
+-- The best option is to make the subcategory code unique within its category, not globally unique. (AUD-REC, VID-REC)
+-- 1. Remove the existing global unique constraint
+ALTER TABLE public.subcategories DROP CONSTRAINT subcategories_code_key;
+-- 2. Add a composite unique constraint (category_id + code)
+ALTER TABLE public.subcategories ADD CONSTRAINT subcategories_category_code_unique UNIQUE (category_id, code);
+
+
 
 CREATE TABLE public.models (
     id uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
