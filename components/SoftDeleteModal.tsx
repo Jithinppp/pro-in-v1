@@ -13,7 +13,11 @@ interface SoftDeleteModalProps {
   onClose: () => void;
 }
 
-export function SoftDeleteModal({ assetId, assetCode, onClose }: SoftDeleteModalProps) {
+export function SoftDeleteModal({
+  assetId,
+  assetCode,
+  onClose,
+}: SoftDeleteModalProps) {
   const router = useRouter();
   const [confirmCode, setConfirmCode] = useState("");
   const [isDeleting, setIsDeleting] = useState(false);
@@ -39,13 +43,15 @@ export function SoftDeleteModal({ assetId, assetCode, onClose }: SoftDeleteModal
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center">
       <div className="absolute inset-0 bg-black/50" onClick={onClose} />
-      <div className="relative bg-white rounded-xl shadow-2xl w-full max-w-md mx-4">
-        <div className="flex items-center justify-between p-6 border-b border-[#e4e4e7]">
+      <div className="relative bg-white rounded-lg p-6 w-full max-w-lg shadow-xl max-h-[90vh] overflow-y-auto mx-4 md:mx-0">
+        <div className="flex items-center justify-between pb-6 ">
           <div className="flex items-center gap-3">
             <div className="p-2 bg-red-100 rounded-lg">
               <AlertTriangle className="w-5 h-5 text-red-600" />
             </div>
-            <h2 className="text-lg font-semibold text-[#242424]">Delete Asset</h2>
+            <h2 className="text-lg font-semibold text-[#242424]">
+              Delete Asset
+            </h2>
           </div>
           <button
             onClick={onClose}
@@ -55,42 +61,50 @@ export function SoftDeleteModal({ assetId, assetCode, onClose }: SoftDeleteModal
           </button>
         </div>
 
-        <div className="p-6 space-y-4">
+        <div className="mt-6 space-y-4">
           <div className="bg-red-50 border border-red-200 rounded-lg p-4">
             <p className="text-sm text-red-700">
-              This asset will be marked as inactive and hidden from the active assets list. 
-              You can restore it later from the database.
+              This asset will be marked as inactive and hidden from the active
+              assets list. You can restore it later from the database.
             </p>
           </div>
 
           <div>
             <label className="block text-sm font-medium text-[#242424] mb-2">
-              Type <span className="font-mono bg-[#f4f4f5] px-2 py-0.5 rounded">{assetCode}</span> to confirm
+              Type{" "}
+              <span className="font-mono bg-[#f4f4f5] px-2 py-0.5 rounded">
+                {assetCode}
+              </span>{" "}
+              to confirm
             </label>
             <Input
               value={confirmCode}
               onChange={(e) => setConfirmCode(e.target.value.toUpperCase())}
               placeholder="Type asset code..."
             />
-            {error && (
-              <p className="text-sm text-red-600 mt-2">{error}</p>
-            )}
+            {error && <p className="text-sm text-red-600 mt-2">{error}</p>}
           </div>
-        </div>
 
-        <div className="flex items-center justify-end gap-3 p-6 border-t border-[#e4e4e7]">
-          <Button type="button" variant="secondary" onClick={onClose}>
-            Cancel
-          </Button>
-          <Button
-            variant="primary"
-            onClick={handleDelete}
-            disabled={!isConfirmValid || isDeleting}
-            loading={isDeleting}
-          >
-            <Trash2 className="w-4 h-4 mr-2" />
-            Delete Asset
-          </Button>
+          <div className="flex gap-3 pt-2">
+            <Button
+              type="button"
+              variant="secondary"
+              onClick={onClose}
+              className="flex-1"
+            >
+              Cancel
+            </Button>
+            <Button
+              variant="danger"
+              onClick={handleDelete}
+              disabled={!isConfirmValid || isDeleting}
+              loading={isDeleting}
+              className="flex-1"
+            >
+              <Trash2 className="w-4 h-4 mr-2" />
+              Delete Asset
+            </Button>
+          </div>
         </div>
       </div>
     </div>

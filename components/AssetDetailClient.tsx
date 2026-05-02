@@ -3,8 +3,8 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { EditAssetModal, SoftDeleteModal, AddMaintenanceLogModal } from "@/components";
-import { ArrowLeft, Package, MapPin, Calendar, DollarSign, ClipboardList, Pencil, Trash2, Wrench, Plus, Clock } from "lucide-react";
+import { EditAssetModal, SoftDeleteModal, AddMaintenanceLogModal, AttachmentsList, AddAttachmentModal, type Attachment } from "@/components";
+import { ArrowLeft, Package, MapPin, Calendar, DollarSign, ClipboardList, Pencil, Trash2, Wrench, Plus, Clock, ImageIcon } from "lucide-react";
 
 export interface Asset {
   id: string;
@@ -55,6 +55,7 @@ export interface MaintenanceLog {
 interface AssetDetailClientProps {
   asset: Asset;
   maintenanceLogs?: MaintenanceLog[];
+  attachments?: Attachment[];
 }
 
 const statusColors: Record<string, string> = {
@@ -73,12 +74,13 @@ const conditionColors: Record<string, string> = {
   POOR: "bg-red-100 text-red-700 border-red-200",
 };
 
-export function AssetDetailClient({ asset, maintenanceLogs = [] }: AssetDetailClientProps) {
+export function AssetDetailClient({ asset, maintenanceLogs = [], attachments = [] }: AssetDetailClientProps) {
   const router = useRouter();
   const [isEditing, setIsEditing] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const [isAddingLog, setIsAddingLog] = useState(false);
   const [showHistory, setShowHistory] = useState(false);
+  const [isAddingAttachment, setIsAddingAttachment] = useState(false);
 
   const formatDate = (date: string | null) => {
     if (!date) return "-";
@@ -354,6 +356,21 @@ export function AssetDetailClient({ asset, maintenanceLogs = [] }: AssetDetailCl
               <p>Created: {formatDate(asset.created_at)}</p>
               <p>Last Updated: {formatDate(asset.updated_at)}</p>
             </div>
+
+            {/* Attachments */}
+            <div className="bg-white border border-[#e4e4e7] rounded-lg p-6">
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="text-sm font-semibold text-[#242424] flex items-center gap-2">
+                  <ImageIcon className="w-4 h-4" />
+                  Photos & Attachments
+                </h2>
+              </div>
+              <AttachmentsList
+                attachments={attachments}
+                onAdd={() => setIsAddingAttachment(true)}
+                onRefresh={() => router.refresh()}
+              />
+            </div>
           </div>
         </div>
       </div>
@@ -390,6 +407,14 @@ export function AssetDetailClient({ asset, maintenanceLogs = [] }: AssetDetailCl
         <AddMaintenanceLogModal
           assetId={asset.id}
           onClose={() => setIsAddingLog(false)}
+        />
+      )}
+
+      {isAddingAttachment && (
+        <AddAttachmentModal
+          assetId={asset.id}
+          currentCount={attachments.length}
+          onClose={() => setIsAddingAttachment(false)}
         />
       )}
     </>

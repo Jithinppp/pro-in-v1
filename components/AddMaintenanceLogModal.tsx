@@ -93,8 +93,8 @@ export function AddMaintenanceLogModal({ assetId, onClose }: AddMaintenanceLogMo
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center">
       <div className="absolute inset-0 bg-black/50" onClick={onClose} />
-      <div className="relative bg-white rounded-xl shadow-2xl w-full max-w-lg mx-4 max-h-[90vh] overflow-y-auto">
-        <div className="flex items-center justify-between p-6 border-b border-[#e4e4e7]">
+      <div className="relative bg-white rounded-lg p-6 w-full max-w-lg shadow-xl max-h-[90vh] overflow-y-auto mx-4 md:mx-0">
+        <div className="flex items-center justify-between mb-6">
           <div className="flex items-center gap-3">
             <div className="p-2 bg-blue-100 rounded-lg">
               <Wrench className="w-5 h-5 text-blue-600" />
@@ -109,7 +109,7 @@ export function AddMaintenanceLogModal({ assetId, onClose }: AddMaintenanceLogMo
           </button>
         </div>
 
-        <form onSubmit={handleSubmit} className="p-6 space-y-4">
+        <div className="space-y-4">
           {errors.form && (
             <div className="bg-red-50 border border-red-200 rounded-lg p-3 text-sm text-red-600">
               {errors.form}
@@ -169,16 +169,16 @@ export function AddMaintenanceLogModal({ assetId, onClose }: AddMaintenanceLogMo
             placeholder="Select interval..."
           />
 
-          <div className="flex items-center justify-end gap-3 pt-4 border-t border-[#e4e4e7]">
-            <Button type="button" variant="secondary" onClick={onClose}>
+          <div className="flex gap-3 pt-2">
+            <Button type="button" variant="secondary" onClick={onClose} className="flex-1">
               Cancel
             </Button>
-            <Button type="submit" loading={isSubmitting}>
+            <Button type="button" onClick={handleSubmit} loading={isSubmitting} className="flex-1">
               <Wrench className="w-4 h-4 mr-2" />
               Save Log
             </Button>
           </div>
-        </form>
+        </div>
       </div>
     </div>
   );

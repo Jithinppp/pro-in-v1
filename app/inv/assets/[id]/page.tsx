@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
-import { Navbar, AssetDetailClient, type Asset, type MaintenanceLog } from "@/components";
+import { Navbar, AssetDetailClient, type Asset, type MaintenanceLog, type Attachment } from "@/components";
 import { ArrowLeft } from "lucide-react";
 
 export const dynamic = "force-dynamic";
@@ -64,6 +64,12 @@ export default async function AssetDetailPage({ params }: PageProps) {
     .select("*")
     .eq("asset_id", id)
     .order("service_date", { ascending: false });
+
+  const { data: attachments } = await supabase
+    .from("asset_attachments")
+    .select("*")
+    .eq("asset_id", id)
+    .order("created_at", { ascending: false });
 
   if (!asset || !asset.is_active) {
     return (
@@ -131,10 +137,21 @@ export default async function AssetDetailPage({ params }: PageProps) {
     created_at: log.created_at,
   }));
 
+  const formattedAttachments: Attachment[] = (attachments || []).map((att: any) => ({
+    id: att.id,
+    asset_id: att.asset_id,
+    type: att.type,
+    name: att.name,
+    url: att.url,
+    is_primary: att.is_primary,
+    sort_order: att.sort_order,
+    created_at: att.created_at,
+  }));
+
   return (
     <div className="min-h-screen bg-[#FAFAFA]">
       <Navbar email={user?.email || ""} />
-      <AssetDetailClient asset={formattedAsset as Asset} maintenanceLogs={formattedLogs} />
+      <AssetDetailClient asset={formattedAsset as Asset} maintenanceLogs={formattedLogs} attachments={formattedAttachments} />
     </div>
   );
 }

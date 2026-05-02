@@ -61,11 +61,11 @@
 - [x] Asset registration form with code generator
 - [x] Asset list with filtering (status, model, location)
 - [x] Asset update/edit (status, condition, location)
-- [ ] Soft-delete (is_active = false)
+- [x] Soft-delete (is_active = false)
 - [x] Single asset detail page
   - [x] Technical specs from Model
-  - [ ] Maintenance logs
-  - [ ] Activity log timeline
+  - [x] Maintenance logs
+  - [x] Activity log timeline
   - [ ] Attach links/images
 - [ ] QR/Barcode scanning
 

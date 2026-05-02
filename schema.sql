@@ -309,3 +309,35 @@ $$;
 CREATE OR REPLACE TRIGGER on_auth_user_created
   AFTER INSERT ON auth.users
   FOR EACH ROW EXECUTE FUNCTION public.handle_new_user();
+
+
+
+  -- Asset Attachments Table
+CREATE TABLE public.asset_attachments (
+    id uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
+    asset_id uuid REFERENCES assets(id) ON DELETE CASCADE NOT NULL,
+    type text NOT NULL CHECK (type IN ('image', 'document', 'link')),
+    name text,
+    url text NOT NULL,
+    is_primary boolean DEFAULT false,
+    sort_order int DEFAULT 0,
+    created_at timestamptz DEFAULT now()
+);
+-- RLS Policies
+ALTER TABLE public.asset_attachments ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "Attachments: Read for all" ON public.asset_attachments FOR SELECT TO authenticated USING (true);
+CREATE POLICY "Attachments: Techs and above can create" ON public.asset_attachments FOR INSERT TO authenticated WITH CHECK (true);
+CREATE POLICY "Attachments: Techs and above can delete" ON public.asset_attachments FOR DELETE TO authenticated USING (true);
+CREATE POLICY "Attachments: Admin/INV can update" ON public.asset_attachments FOR UPDATE TO authenticated USING (get_my_role() IN ('ADMIN', 'INV'));
+-- Index for fast queries
+CREATE INDEX idx_asset_attachments_asset_id ON public.asset_attachments(asset_id);
+CREATE INDEX idx_asset_attachments_sort_order ON public.asset_attachments(sort_order);
+
+-- Create bucket for asset attachments
+INSERT INTO storage.buckets (id, name, public, file_size_limit, allowed_mime_types)
+VALUES ('asset-attachments', 'asset-attachments', true, 10485760, ARRAY['image/jpeg', 'image/png', 'image/webp', 'application/pdf']);
+-- Storage policies (read/write for authenticated users)
+CREATE POLICY "Authenticated users can upload" ON storage.objects FOR INSERT TO authenticated WITH CHECK (bucket_id = 'asset-attachments');
+CREATE POLICY "Anyone can view" ON storage.objects FOR SELECT USING (bucket_id = 'asset-attachments');
+CREATE POLICY "Owner can delete" ON storage.objects FOR DELETE USING (auth.uid()::text = (storage.foldername(name))[1]);
+---
