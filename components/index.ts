@@ -30,4 +30,5 @@ export { AssetsFilters } from "./AssetsFilters";
 export { AssetsList } from "./AssetsList";
 export { EditAssetModal } from "./EditAssetModal";
 export { AddAssetForm } from "./AddAssetForm";
-export { AssetDetailClient } from "./AssetDetailClient";
+export { AssetDetailClient, type Asset } from "./AssetDetailClient";
+export { SoftDeleteModal } from "./SoftDeleteModal";

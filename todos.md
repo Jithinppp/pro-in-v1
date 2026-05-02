@@ -58,12 +58,12 @@
 
 #### Assets
 
-- [ ] Asset registration form with code generator
-- [ ] Asset list with filtering (status, model, location)
-- [ ] Asset update/edit (status, condition, location)
+- [x] Asset registration form with code generator
+- [x] Asset list with filtering (status, model, location)
+- [x] Asset update/edit (status, condition, location)
 - [ ] Soft-delete (is_active = false)
-- [ ] Single asset detail page
-  - [ ] Technical specs from Model
+- [x] Single asset detail page
+  - [x] Technical specs from Model
   - [ ] Maintenance logs
   - [ ] Activity log timeline
   - [ ] Attach links/images

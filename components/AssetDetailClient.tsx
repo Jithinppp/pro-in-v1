@@ -3,10 +3,10 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { EditAssetModal } from "@/components";
-import { ArrowLeft, Package, MapPin, Calendar, DollarSign, ClipboardList, Pencil } from "lucide-react";
+import { EditAssetModal, SoftDeleteModal } from "@/components";
+import { ArrowLeft, Package, MapPin, Calendar, DollarSign, ClipboardList, Pencil, Trash2 } from "lucide-react";
 
-interface Asset {
+export interface Asset {
   id: string;
   asset_code: string;
   serial_number: string | null;
@@ -63,6 +63,7 @@ const conditionColors: Record<string, string> = {
 export function AssetDetailClient({ asset }: AssetDetailClientProps) {
   const router = useRouter();
   const [isEditing, setIsEditing] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   const formatDate = (date: string | null) => {
     if (!date) return "-";
@@ -117,6 +118,12 @@ export function AssetDetailClient({ asset }: AssetDetailClientProps) {
                 className="p-2 hover:bg-[#f5f5f5] rounded-lg transition-colors text-[#898989] hover:text-[#242424]"
               >
                 <Pencil className="w-4 h-4" />
+              </button>
+              <button
+                onClick={() => setIsDeleting(true)}
+                className="p-2 hover:bg-red-50 rounded-lg transition-colors text-[#898989] hover:text-red-600"
+              >
+                <Trash2 className="w-4 h-4" />
               </button>
             </div>
 
@@ -273,6 +280,14 @@ export function AssetDetailClient({ asset }: AssetDetailClientProps) {
             setIsEditing(false);
             router.refresh();
           }}
+        />
+      )}
+
+      {isDeleting && (
+        <SoftDeleteModal
+          assetId={asset.id}
+          assetCode={asset.asset_code}
+          onClose={() => setIsDeleting(false)}
         />
       )}
     </>

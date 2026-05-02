@@ -1,7 +1,9 @@
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
-import { Navbar, AssetDetailClient } from "@/components";
-import { ArrowLeft, Package } from "lucide-react";
+import { Navbar, AssetDetailClient, type Asset } from "@/components";
+import { ArrowLeft } from "lucide-react";
+
+export const dynamic = "force-dynamic";
 
 interface PageProps {
   params: Promise<{ id: string }>;
@@ -17,7 +19,8 @@ export default async function AssetDetailPage({ params }: PageProps) {
 
   const { data: asset } = await supabase
     .from("assets")
-    .select(`
+    .select(
+      `
       id,
       asset_code,
       serial_number,
@@ -51,11 +54,12 @@ export default async function AssetDetailPage({ params }: PageProps) {
         )
       ),
       supplier:suppliers(name)
-    `)
+    `,
+    )
     .eq("id", id)
     .single();
 
-  if (!asset) {
+  if (!asset || !asset.is_active) {
     return (
       <div className="min-h-screen bg-[#FAFAFA]">
         <Navbar email={user?.email || ""} />
@@ -67,9 +71,13 @@ export default async function AssetDetailPage({ params }: PageProps) {
             >
               <ArrowLeft className="w-5 h-5 text-[#898989]" />
             </Link>
-            <h1 className="text-2xl font-semibold text-[#242424]">Asset Not Found</h1>
+            <h1 className="text-2xl font-semibold text-[#242424]">
+              Asset Not Found
+            </h1>
           </div>
-          <p className="text-[#898989]">The requested asset could not be found.</p>
+          <p className="text-[#898989]">
+            The requested asset has been deleted or is no longer active.
+          </p>
         </main>
       </div>
     );
@@ -94,15 +102,21 @@ export default async function AssetDetailPage({ params }: PageProps) {
     created_at: asset.created_at,
     updated_at: asset.updated_at,
     location_id: asset.location_id,
-    location: asset.location,
-    model: asset.model,
-    supplier: asset.supplier,
+    location: Array.isArray(asset.location) && asset.location[0] 
+      ? { name: asset.location[0].name } 
+      : undefined,
+    model: Array.isArray(asset.model) && asset.model[0]
+      ? asset.model[0]
+      : undefined,
+    supplier: Array.isArray(asset.supplier) && asset.supplier[0]
+      ? { name: asset.supplier[0].name }
+      : undefined,
   };
 
   return (
     <div className="min-h-screen bg-[#FAFAFA]">
       <Navbar email={user?.email || ""} />
-      <AssetDetailClient asset={formattedAsset as any} />
+      <AssetDetailClient asset={formattedAsset as Asset} />
     </div>
   );
 }

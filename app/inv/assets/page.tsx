@@ -30,6 +30,7 @@ export default async function AssetsPage() {
         subcategory:subcategories (name)
       )
     `)
+    .eq("is_active", true)
     .order("created_at", { ascending: false })
     .limit(500);
 
