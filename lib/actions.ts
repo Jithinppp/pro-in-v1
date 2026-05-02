@@ -25,3 +25,59 @@ export async function softDeleteAsset(assetId: string, assetCode: string, confir
 
   return { success: true };
 }
+
+export async function addMaintenanceLog(
+  assetId: string,
+  serviceDate: string,
+  description: string,
+  technician: string,
+  cost: number | null,
+  partsReplaced: string,
+  nextMaintenanceDays: number | null
+) {
+  const supabase = await createClient();
+
+  const { error: logError } = await supabase
+    .from("maintenance_logs")
+    .insert({
+      asset_id: assetId,
+      service_date: serviceDate,
+      description,
+      technician: technician || null,
+      cost: cost || null,
+      parts_replaced: partsReplaced || null,
+    });
+
+  if (logError) {
+    return { error: logError.message };
+  }
+
+  if (nextMaintenanceDays) {
+    const nextDate = new Date();
+    nextDate.setDate(nextDate.getDate() + nextMaintenanceDays);
+    const nextMaintenance = nextDate.toISOString().split("T")[0];
+
+    const { error: updateError } = await supabase
+      .from("assets")
+      .update({
+        last_maintenance: serviceDate,
+        next_maintenance: nextMaintenance,
+      })
+      .eq("id", assetId);
+
+    if (updateError) {
+      return { error: updateError.message };
+    }
+  } else {
+    const { error: updateError } = await supabase
+      .from("assets")
+      .update({ last_maintenance: serviceDate })
+      .eq("id", assetId);
+
+    if (updateError) {
+      return { error: updateError.message };
+    }
+  }
+
+  return { success: true };
+}

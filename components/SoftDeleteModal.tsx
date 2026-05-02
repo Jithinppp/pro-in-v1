@@ -3,7 +3,9 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { softDeleteAsset } from "@/lib/actions";
-import { Trash2, AlertTriangle, X, Loader2 } from "lucide-react";
+import { Input } from "./Input";
+import { Button } from "./Button";
+import { Trash2, AlertTriangle, X } from "lucide-react";
 
 interface SoftDeleteModalProps {
   assetId: string;
@@ -65,12 +67,10 @@ export function SoftDeleteModal({ assetId, assetCode, onClose }: SoftDeleteModal
             <label className="block text-sm font-medium text-[#242424] mb-2">
               Type <span className="font-mono bg-[#f4f4f5] px-2 py-0.5 rounded">{assetCode}</span> to confirm
             </label>
-            <input
-              type="text"
+            <Input
               value={confirmCode}
               onChange={(e) => setConfirmCode(e.target.value.toUpperCase())}
               placeholder="Type asset code..."
-              className="w-full px-4 py-3 border border-[#e4e4e7] rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent"
             />
             {error && (
               <p className="text-sm text-red-600 mt-2">{error}</p>
@@ -79,29 +79,18 @@ export function SoftDeleteModal({ assetId, assetCode, onClose }: SoftDeleteModal
         </div>
 
         <div className="flex items-center justify-end gap-3 p-6 border-t border-[#e4e4e7]">
-          <button
-            onClick={onClose}
-            className="px-4 py-2 text-sm font-medium text-[#242424] hover:bg-[#f4f4f5] rounded-lg transition-colors"
-          >
+          <Button type="button" variant="secondary" onClick={onClose}>
             Cancel
-          </button>
-          <button
+          </Button>
+          <Button
+            variant="primary"
             onClick={handleDelete}
             disabled={!isConfirmValid || isDeleting}
-            className="px-4 py-2 text-sm font-medium text-white bg-red-600 hover:bg-red-700 disabled:opacity-50 disabled:cursor-not-allowed rounded-lg transition-colors flex items-center gap-2"
+            loading={isDeleting}
           >
-            {isDeleting ? (
-              <>
-                <Loader2 className="w-4 h-4 animate-spin" />
-                Deleting...
-              </>
-            ) : (
-              <>
-                <Trash2 className="w-4 h-4" />
-                Delete Asset
-              </>
-            )}
-          </button>
+            <Trash2 className="w-4 h-4 mr-2" />
+            Delete Asset
+          </Button>
         </div>
       </div>
     </div>

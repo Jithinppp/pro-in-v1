@@ -3,8 +3,8 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { EditAssetModal, SoftDeleteModal } from "@/components";
-import { ArrowLeft, Package, MapPin, Calendar, DollarSign, ClipboardList, Pencil, Trash2 } from "lucide-react";
+import { EditAssetModal, SoftDeleteModal, AddMaintenanceLogModal } from "@/components";
+import { ArrowLeft, Package, MapPin, Calendar, DollarSign, ClipboardList, Pencil, Trash2, Wrench, Plus, Clock } from "lucide-react";
 
 export interface Asset {
   id: string;
@@ -40,8 +40,21 @@ export interface Asset {
   location_id: string | null;
 }
 
+export interface MaintenanceLog {
+  id: string;
+  asset_id: string;
+  service_date: string;
+  technician: string | null;
+  description: string;
+  cost: number | null;
+  parts_replaced: string | null;
+  photo_url: string | null;
+  created_at: string;
+}
+
 interface AssetDetailClientProps {
   asset: Asset;
+  maintenanceLogs?: MaintenanceLog[];
 }
 
 const statusColors: Record<string, string> = {
@@ -60,10 +73,12 @@ const conditionColors: Record<string, string> = {
   POOR: "bg-red-100 text-red-700 border-red-200",
 };
 
-export function AssetDetailClient({ asset }: AssetDetailClientProps) {
+export function AssetDetailClient({ asset, maintenanceLogs = [] }: AssetDetailClientProps) {
   const router = useRouter();
   const [isEditing, setIsEditing] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [isAddingLog, setIsAddingLog] = useState(false);
+  const [showHistory, setShowHistory] = useState(false);
 
   const formatDate = (date: string | null) => {
     if (!date) return "-";
@@ -80,6 +95,36 @@ export function AssetDetailClient({ asset }: AssetDetailClientProps) {
       style: "currency",
       currency: "USD",
     }).format(amount);
+  };
+
+  const formatDaysAgo = (dateStr: string | null) => {
+    if (!dateStr) return "";
+    const date = new Date(dateStr);
+    const today = new Date();
+    const diffTime = today.getTime() - date.getTime();
+    const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+    if (diffDays === 0) return "Today";
+    if (diffDays === 1) return "Yesterday";
+    if (diffDays < 30) return `${diffDays} days ago`;
+    if (diffDays < 365) return `${Math.floor(diffDays / 30)} months ago`;
+    return `${Math.floor(diffDays / 365)} years ago`;
+  };
+
+  const getDaysUntil = (dateStr: string | null) => {
+    if (!dateStr) return 0;
+    const date = new Date(dateStr);
+    const today = new Date();
+    const diffTime = date.getTime() - today.getTime();
+    return Math.floor(diffTime / (1000 * 60 * 60 * 24));
+  };
+
+  const formatDaysUntil = (dateStr: string | null) => {
+    if (!dateStr) return "";
+    const days = getDaysUntil(dateStr);
+    if (days === 0) return "Due today";
+    if (days === 1) return "Due tomorrow";
+    if (days < 0) return `${Math.abs(days)} days overdue`;
+    return `Due in ${days} days`;
   };
 
   return (
@@ -238,20 +283,70 @@ export function AssetDetailClient({ asset }: AssetDetailClientProps) {
 
             {/* Maintenance */}
             <div className="bg-white border border-[#e4e4e7] rounded-lg p-6">
-              <h2 className="text-sm font-semibold text-[#242424] mb-4 flex items-center gap-2">
-                <Calendar className="w-4 h-4" />
-                Maintenance
-              </h2>
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="text-sm font-semibold text-[#242424] flex items-center gap-2">
+                  <Calendar className="w-4 h-4" />
+                  Maintenance
+                </h2>
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={() => setShowHistory(!showHistory)}
+                    className="text-xs text-blue-600 hover:text-blue-700 font-medium"
+                  >
+                    {showHistory ? "Hide History" : `View History (${maintenanceLogs.length})`}
+                  </button>
+                  <button
+                    onClick={() => setIsAddingLog(true)}
+                    className="flex items-center gap-1 text-xs text-blue-600 hover:text-blue-700 font-medium"
+                  >
+                    <Plus className="w-3 h-3" />
+                    Add Log
+                  </button>
+                </div>
+              </div>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <p className="text-xs text-[#71717a] uppercase tracking-wider">Last Maintenance</p>
                   <p className="text-sm text-[#242424]">{formatDate(asset.last_maintenance)}</p>
+                  {asset.last_maintenance && (
+                    <p className="text-xs text-[#71717a]">({formatDaysAgo(asset.last_maintenance)})</p>
+                  )}
                 </div>
                 <div>
                   <p className="text-xs text-[#71717a] uppercase tracking-wider">Next Maintenance</p>
-                  <p className="text-sm text-[#242424]">{formatDate(asset.next_maintenance)}</p>
+                  <p className="text-sm text-[#242424]">{formatDate(asset.next_maintenance) || "-"}</p>
+                  {asset.next_maintenance && (
+                    <p className={`text-xs ${getDaysUntil(asset.next_maintenance) < 0 ? "text-red-600 font-medium" : "text-[#71717a]"}`}>
+                      ({formatDaysUntil(asset.next_maintenance)})
+                    </p>
+                  )}
                 </div>
               </div>
+
+              {showHistory && maintenanceLogs.length > 0 && (
+                <div className="mt-4 pt-4 border-t border-[#e4e4e7]">
+                  <h3 className="text-xs font-medium text-[#71717a] uppercase tracking-wider mb-3">Maintenance History</h3>
+                  <div className="space-y-3">
+                    {maintenanceLogs.map((log) => (
+                      <div key={log.id} className="bg-[#f9f9f9] rounded-lg p-3">
+                        <div className="flex items-center justify-between mb-1">
+                          <p className="text-sm font-medium text-[#242424]">{formatDate(log.service_date)}</p>
+                          {log.cost && (
+                            <p className="text-sm text-[#71717a]">{formatCurrency(log.cost)}</p>
+                          )}
+                        </div>
+                        <p className="text-sm text-[#242424]">{log.description}</p>
+                        {log.technician && (
+                          <p className="text-xs text-[#71717a] mt-1">Technician: {log.technician}</p>
+                        )}
+                        {log.parts_replaced && (
+                          <p className="text-xs text-[#71717a]">Parts: {log.parts_replaced}</p>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
 
             {/* Metadata */}
@@ -288,6 +383,13 @@ export function AssetDetailClient({ asset }: AssetDetailClientProps) {
           assetId={asset.id}
           assetCode={asset.asset_code}
           onClose={() => setIsDeleting(false)}
+        />
+      )}
+
+      {isAddingLog && (
+        <AddMaintenanceLogModal
+          assetId={asset.id}
+          onClose={() => setIsAddingLog(false)}
         />
       )}
     </>
