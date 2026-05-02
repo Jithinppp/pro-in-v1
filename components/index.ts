@@ -35,3 +35,4 @@ export { SoftDeleteModal } from "./SoftDeleteModal";
 export { AddMaintenanceLogModal } from "./AddMaintenanceLogModal";
 export { AttachmentsList, type Attachment } from "./AttachmentsList";
 export { AddAttachmentModal } from "./AddAttachmentModal";
+export { ActivityLogViewer } from "./ActivityLogViewer";

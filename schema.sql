@@ -341,3 +341,75 @@ CREATE POLICY "Authenticated users can upload" ON storage.objects FOR INSERT TO 
 CREATE POLICY "Anyone can view" ON storage.objects FOR SELECT USING (bucket_id = 'asset-attachments');
 CREATE POLICY "Owner can delete" ON storage.objects FOR DELETE USING (auth.uid()::text = (storage.foldername(name))[1]);
 ---
+
+
+
+-- Asset trigger log trigger function-- Fixed: Asset trigger
+CREATE OR REPLACE FUNCTION public.log_asset_change()
+RETURNS TRIGGER AS $$
+DECLARE
+  v_user_id uuid;
+BEGIN
+  v_user_id := NULLIF(current_setting('auth.uid', true), '')::uuid;
+  
+  INSERT INTO public.activity_log (user_id, entity_type, entity_id, action, old_value, new_value)
+  VALUES (
+    v_user_id,
+    'asset',
+    COALESCE(NEW.id, OLD.id),
+    CASE WHEN TG_OP = 'INSERT' THEN 'created' 
+         WHEN TG_OP = 'UPDATE' THEN 'updated' 
+         WHEN TG_OP = 'DELETE' THEN 'deleted' END,
+    CASE WHEN TG_OP != 'INSERT' THEN to_jsonb(OLD) END,
+    CASE WHEN TG_OP != 'DELETE' THEN to_jsonb(NEW) END
+  );
+  RETURN COALESCE(NEW, OLD);
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+DROP TRIGGER IF EXISTS on_asset_change ON public.assets;
+CREATE TRIGGER on_asset_change
+AFTER INSERT OR UPDATE OR DELETE ON public.assets
+FOR EACH ROW EXECUTE FUNCTION public.log_asset_change();
+-- Fixed: Maintenance trigger
+CREATE OR REPLACE FUNCTION public.log_maintenance()
+RETURNS TRIGGER AS $$
+DECLARE
+  v_user_id uuid;
+BEGIN
+  v_user_id := NULLIF(current_setting('auth.uid', true), '')::uuid;
+  INSERT INTO public.activity_log (user_id, entity_type, entity_id, action, new_value)
+  VALUES (
+    v_user_id,
+    'asset',
+    NEW.asset_id,
+    'maintenance_log_added',
+    to_jsonb(NEW)
+  );
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+DROP TRIGGER IF EXISTS on_maintenance_log ON public.maintenance_logs;
+CREATE TRIGGER on_maintenance_log
+AFTER INSERT ON public.maintenance_logs
+FOR EACH ROW EXECUTE FUNCTION public.log_maintenance();
+-- Fixed: Attachments trigger
+CREATE OR REPLACE FUNCTION public.log_attachment()
+RETURNS TRIGGER AS $$
+DECLARE
+  v_user_id uuid;
+BEGIN
+  v_user_id := NULLIF(current_setting('auth.uid', true), '')::uuid;
+  IF TG_OP = 'INSERT' THEN
+    INSERT INTO public.activity_log (user_id, entity_type, entity_id, action, new_value)
+    VALUES (v_user_id, 'attachment', NEW.id, 'attachment_added', to_jsonb(NEW));
+  ELSIF TG_OP = 'DELETE' THEN
+    INSERT INTO public.activity_log (user_id, entity_type, entity_id, action, old_value)
+    VALUES (v_user_id, 'attachment', OLD.id, 'attachment_deleted', to_jsonb(OLD));
+  END IF;
+  RETURN COALESCE(NEW, OLD);
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+DROP TRIGGER IF EXISTS on_attachment_add ON public.asset_attachments;
+CREATE TRIGGER on_attachment_add
+AFTER INSERT OR DELETE ON public.asset_attachments
+FOR EACH ROW EXECUTE FUNCTION public.log_attachment();

@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { Navbar, StatsCard } from "@/components";
-import { Package, LayoutGrid, MapPin, PackageOpen } from "lucide-react";
+import { Package, LayoutGrid, MapPin, PackageOpen, Clock, History } from "lucide-react";
 
 export default async function InvDashboard() {
   const supabase = await createClient();
@@ -16,6 +16,18 @@ export default async function InvDashboard() {
     supabase.from("storage_locations").select("id", { count: "exact" }),
     supabase.from("models").select("id", { count: "exact" }),
   ]);
+
+  const { data: recentActivity } = await supabase
+    .from("activity_log")
+    .select("*, user:profiles(email)")
+    .order("created_at", { ascending: false })
+    .limit(5);
+
+  const { data: recentAssets } = await supabase
+    .from("assets")
+    .select("id, asset_code, status, updated_at")
+    .order("updated_at", { ascending: false })
+    .limit(5);
 
   const assets = assetsResult.data || [];
   const availableCount = assets.filter((a) => a.status === "AVAILABLE").length;
@@ -100,6 +112,52 @@ export default async function InvDashboard() {
             ))}
           </div>
         </div>
+
+        {recentActivity && recentActivity.length > 0 && (
+          <div className="mt-8">
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-lg font-semibold text-[#242424]">Recent Activity</h2>
+              <Link 
+                href="/inv/activity" 
+                className="text-sm text-blue-600 hover:text-blue-700 font-medium flex items-center gap-2"
+              >
+                <History className="w-4 h-4" />
+                View All
+              </Link>
+            </div>
+            <div className="bg-white border border-[#e4e4e7] rounded-lg overflow-hidden">
+              <table className="w-full">
+                <thead className="bg-[#fafafa] border-b border-[#e4e4e7]">
+                  <tr>
+                    <th className="text-left text-xs font-medium text-[#71717a] px-4 py-3">Action</th>
+                    <th className="text-left text-xs font-medium text-[#71717a] px-4 py-3">User</th>
+                    <th className="text-left text-xs font-medium text-[#71717a] px-4 py-3">When</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-[#e4e4e7]">
+                  {recentActivity.map((log: any) => (
+                    <tr key={log.id} className="hover:bg-[#fafafa]">
+                      <td className="px-4 py-3 text-sm text-[#242424]">
+                        {log.entity_type}: {log.action.replace(/_/g, " ")}
+                      </td>
+                      <td className="px-4 py-3 text-sm text-[#71717a]">
+                        {log.user?.email?.split("@")[0] || "Unknown"}
+                      </td>
+                      <td className="px-4 py-3 text-sm text-[#71717a]">
+                        {new Date(log.created_at).toLocaleDateString("en-US", {
+                          month: "short",
+                          day: "numeric",
+                          hour: "numeric",
+                          minute: "2-digit",
+                        })}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        )}
       </main>
     </div>
   );

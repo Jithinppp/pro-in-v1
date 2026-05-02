@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { EditAssetModal, SoftDeleteModal, AddMaintenanceLogModal, AttachmentsList, AddAttachmentModal, type Attachment } from "@/components";
+import { EditAssetModal, SoftDeleteModal, AddMaintenanceLogModal, AttachmentsList, AddAttachmentModal, ActivityLogViewer, type Attachment } from "@/components";
 import { ArrowLeft, Package, MapPin, Calendar, DollarSign, ClipboardList, Pencil, Trash2, Wrench, Plus, Clock, ImageIcon } from "lucide-react";
 
 export interface Asset {
@@ -371,6 +371,9 @@ export function AssetDetailClient({ asset, maintenanceLogs = [], attachments = [
                 onRefresh={() => router.refresh()}
               />
             </div>
+
+            {/* Activity Log */}
+            <ActivityLogViewer entityId={asset.id} entityType="asset" limit={10} />
           </div>
         </div>
       </div>

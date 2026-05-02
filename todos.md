@@ -66,7 +66,7 @@
   - [x] Technical specs from Model
   - [x] Maintenance logs
   - [x] Activity log timeline
-  - [ ] Attach links/images
+  - [x] Attach links/images
 - [ ] QR/Barcode scanning
 
 #### Consumables

@@ -7,6 +7,28 @@ export async function signOut() {
   redirect("/");
 }
 
+export async function logActivity(
+  entityType: string,
+  entityId: string,
+  action: string,
+  oldValue?: Record<string, unknown> | null,
+  newValue?: Record<string, unknown> | null
+) {
+  const supabase = await createClient();
+  
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return;
+
+  await supabase.from("activity_log").insert({
+    user_id: user.id,
+    entity_type: entityType,
+    entity_id: entityId,
+    action,
+    old_value: oldValue ? JSON.stringify(oldValue) : null,
+    new_value: newValue ? JSON.stringify(newValue) : null,
+  });
+}
+
 export async function softDeleteAsset(assetId: string, assetCode: string, confirmCode: string) {
   const supabase = await createClient();
   
@@ -14,13 +36,15 @@ export async function softDeleteAsset(assetId: string, assetCode: string, confir
     return { error: "Asset code mismatch. Please type the exact asset code to confirm deletion." };
   }
 
+  const { data: oldAsset } = await supabase.from("assets").select("*, model:models(name), location:storage_locations(name)").eq("id", assetId).single();
+
   const { error } = await supabase
     .from("assets")
     .update({ is_active: false })
     .eq("id", assetId);
 
   if (error) {
-    return { error: error.message };
+return { error: error.message };
   }
 
   return { success: true };
@@ -150,7 +174,7 @@ export async function deleteAttachment(attachmentId: string) {
 
   const { data: attachment, error: fetchError } = await supabase
     .from("asset_attachments")
-    .select("url, asset_id, is_primary")
+    .select("url, asset_id, is_primary, name")
     .eq("id", attachmentId)
     .single();
 

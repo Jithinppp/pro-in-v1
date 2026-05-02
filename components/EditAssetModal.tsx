@@ -1,8 +1,12 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
-import { Button, Input, Select, Textarea } from "@/components";
+import { Input } from "./Input";
+import { Textarea } from "./Textarea";
+import { Select } from "./Select";
+import { Button } from "./Button";
 import { X } from "lucide-react";
 
 interface Asset {
@@ -40,6 +44,7 @@ const conditionOptions = [
 
 export function EditAssetModal({ asset, onClose, onSave }: EditAssetModalProps) {
   const supabase = createClient();
+  const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
   const [status, setStatus] = useState(asset.status);
   const [condition, setCondition] = useState(asset.condition);
@@ -64,6 +69,7 @@ export function EditAssetModal({ asset, onClose, onSave }: EditAssetModalProps) 
     setIsLoading(false);
     
     if (!error) {
+      router.refresh();
       onSave();
       onClose();
     }
