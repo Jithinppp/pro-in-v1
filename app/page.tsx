@@ -17,7 +17,7 @@ const loginSchema = z.object({
 
 type LoginFormData = z.infer<typeof loginSchema>;
 
-const APP_NAME = process.env.NEXT_PUBLIC_APP_NAME || "PROIN";
+const APP_NAME = process.env.NEXT_PUBLIC_APP_NAME || "PROAMS";
 const APP_TAGLINE =
   process.env.NEXT_PUBLIC_APP_TAGLINE || "Asset Management System";
 

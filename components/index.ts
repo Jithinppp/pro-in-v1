@@ -39,3 +39,5 @@ export { ActivityLogViewer } from "./ActivityLogViewer";
 export { ConsumablesList } from "./ConsumablesList";
 export { QuickAdjustModal } from "./QuickAdjustModal";
 export { AddConsumableModal } from "./AddConsumableModal";
+export { EditConsumableModal } from "./EditConsumableModal";
+export { DeleteConsumableModal } from "./DeleteConsumableModal";

@@ -57,15 +57,15 @@ export default async function CatalogPage() {
                 <action.icon className="w-6 h-6" />
               </div>
               <div className="mt-4 space-y-1">
-                <span className="text-sm font-semibold text-[#242424] leading-tight block">
+                <span className="text-base font-semibold text-[#242424] leading-tight block">
                   {action.title}
                 </span>
-                <span className="text-xs text-[#898989] leading-relaxed block">
+                <span className="text-sm text-[#71717a] leading-relaxed block">
                   {action.description}
                 </span>
               </div>
               <div className="mt-4 pt-4 border-t border-[#e4e4e7] w-full">
-                <span className="text-xs text-[#898989]">{action.count} items</span>
+                <span className="text-sm text-[#71717a]">{action.count} items</span>
               </div>
             </Link>
           ))}
@@ -74,58 +74,58 @@ export default async function CatalogPage() {
         <div className="bg-white border border-[#e4e4e7] rounded-lg p-8">
           <h2 className="text-lg font-semibold text-[#242424] mb-6">How the Catalog Works</h2>
 
-          <div className="prose prose-sm max-w-none text-[#898989]">
+          <div className="prose prose-sm max-w-none text-[#71717a]">
             <div className="space-y-6">
               <div className="flex gap-4">
-                <div className="w-8 h-8 rounded-full bg-[#242424] text-white flex items-center justify-center text-sm font-medium shrink-0">
+                <div className="w-10 h-10 rounded-full bg-[#242424] text-white flex items-center justify-center text-base font-medium shrink-0">
                   1
                 </div>
                 <div>
-                  <h3 className="text-sm font-semibold text-[#242424] mb-1">Categories</h3>
-                  <p className="text-xs leading-relaxed">
+                  <h3 className="text-base font-semibold text-[#242424] mb-1">Categories</h3>
+                  <p className="text-sm leading-relaxed">
                     The top level of your taxonomy. Create categories to organize your equipment by type (e.g., Audio, Video, Lighting, Stage, Power).
                   </p>
                 </div>
               </div>
 
               <div className="flex gap-4">
-                <div className="w-8 h-8 rounded-full bg-[#242424] text-white flex items-center justify-center text-sm font-medium shrink-0">
+                <div className="w-10 h-10 rounded-full bg-[#242424] text-white flex items-center justify-center text-base font-medium shrink-0">
                   2
                 </div>
                 <div>
-                  <h3 className="text-sm font-semibold text-[#242424] mb-1">Subcategories</h3>
-                  <p className="text-xs leading-relaxed">
+                  <h3 className="text-base font-semibold text-[#242424] mb-1">Subcategories</h3>
+                  <p className="text-sm leading-relaxed">
                     The second level - types within each category. Example: Under "Audio", create subcategories like "Microphones", "Speakers", "Mixers", "Amps".
                   </p>
                 </div>
               </div>
 
               <div className="flex gap-4">
-                <div className="w-8 h-8 rounded-full bg-[#242424] text-white flex items-center justify-center text-sm font-medium shrink-0">
+                <div className="w-10 h-10 rounded-full bg-[#242424] text-white flex items-center justify-center text-base font-medium shrink-0">
                   3
                 </div>
                 <div>
-                  <h3 className="text-sm font-semibold text-[#242424] mb-1">Models</h3>
-                  <p className="text-xs leading-relaxed">
+                  <h3 className="text-base font-semibold text-[#242424] mb-1">Models</h3>
+                  <p className="text-sm leading-relaxed">
                     The product level - specific equipment you own. Each model links to a subcategory and contains brand, name, and technical specifications. Physical assets (individual units) are then created from these models.
                   </p>
                 </div>
               </div>
 
               <div className="bg-[#f5f5f5] rounded-lg p-4 mt-6">
-                <h4 className="text-xs font-semibold text-[#242424] mb-2">Creating a Model</h4>
-                <p className="text-xs leading-relaxed">
+                <h4 className="text-base font-semibold text-[#242424] mb-2">Creating a Model</h4>
+                <p className="text-sm leading-relaxed">
                   When adding a new model, you must first select a <strong>Category</strong> and then a <strong>Subcategory</strong>. This establishes the relationship in the database. Only after a subcategory exists can you create models that belong to it.
                 </p>
-                <div className="mt-3 flex items-center gap-2 text-xs">
+                <div className="mt-3 flex items-center gap-2 text-sm">
                   <span className="text-[#242424]">Flow:</span>
-                  <span className="text-[#898989]">Category → Subcategory → Model → Assets</span>
+                  <span className="text-[#71717a]">Category → Subcategory → Model → Assets</span>
                 </div>
               </div>
 
               <div className="bg-[#f5f5f5] rounded-lg p-4">
-                <h4 className="text-xs font-semibold text-[#242424] mb-2">Why This Matters</h4>
-                <ul className="text-xs leading-relaxed space-y-1 text-[#898989]">
+                <h4 className="text-base font-semibold text-[#242424] mb-2">Why This Matters</h4>
+                <ul className="text-sm leading-relaxed space-y-1 text-[#71717a]">
                   <li>• Filters work by category → subcategory → model hierarchy</li>
                   <li>• Asset codes are generated using category/subcategory codes</li>
                   <li>• Reports can show equipment breakdown by category</li>

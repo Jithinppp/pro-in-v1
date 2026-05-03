@@ -1,108 +1,62 @@
 "use client";
 
-import { useState, useEffect, useMemo } from "react";
-import { useRouter } from "next/navigation";
+import { useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { Input } from "./Input";
 import { Button } from "./Button";
 import { Select } from "./Select";
 import { Package, X } from "lucide-react";
-import type { Category, Subcategory, Model, Location } from "@/lib/types";
+import { updateConsumable } from "@/lib/actions/consumables";
+import type { Category, Subcategory, Model, Location, ConsumableItem } from "@/lib/types";
 
-interface AddConsumableModalProps {
+interface EditConsumableModalProps {
+  consumable: ConsumableItem;
   categories: Category[];
   subcategories: Subcategory[];
   models: Model[];
   locations: Location[];
   onClose: () => void;
+  onSave: () => void;
 }
 
-export function AddConsumableModal({
+export function EditConsumableModal({
+  consumable,
   categories,
   subcategories,
   models,
   locations,
   onClose,
-}: AddConsumableModalProps) {
-  const router = useRouter();
-  const supabase = createClient();
-
-  const [selectedCategory, setSelectedCategory] = useState("");
-  const [selectedSubcategory, setSelectedSubcategory] = useState("");
-  const [selectedModel, setSelectedModel] = useState("");
-  const [selectedLocation, setSelectedLocation] = useState("");
-  const [quantity, setQuantity] = useState("0");
-  const [threshold, setThreshold] = useState("5");
-  const [unitType, setUnitType] = useState("");
+  onSave,
+}: EditConsumableModalProps) {
+  const [selectedLocation, setSelectedLocation] = useState(consumable.location_id || "");
+  const [quantity, setQuantity] = useState(consumable.quantity.toString());
+  const [threshold, setThreshold] = useState(consumable.low_stock_threshold.toString());
+  const [unitType, setUnitType] = useState(consumable.unit_type || "");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState("");
-
-  const filteredSubcategories = useMemo(() => {
-    if (!selectedCategory) return [];
-    return subcategories.filter((s) => s.category_id === selectedCategory);
-  }, [selectedCategory, subcategories]);
-
-  const filteredModels = useMemo(() => {
-    if (!selectedSubcategory) return [];
-    return models.filter((m) => m.subcategory_id === selectedSubcategory);
-  }, [selectedSubcategory, models]);
-
-  useEffect(() => {
-    if (!selectedCategory) {
-      setSelectedSubcategory("");
-      setSelectedModel("");
-    }
-  }, [selectedCategory]);
-
-  useEffect(() => {
-    if (!selectedSubcategory) {
-      setSelectedModel("");
-    }
-  }, [selectedSubcategory]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!selectedModel) {
-      setError("Please select a model");
-      return;
-    }
-
     setIsSubmitting(true);
     setError("");
 
-    const { error: insertError } = await supabase.from("consumables").insert({
-      model_id: selectedModel,
+    const result = await updateConsumable(consumable.id, {
       location_id: selectedLocation || null,
       quantity: parseInt(quantity) || 0,
       low_stock_threshold: parseInt(threshold) || 5,
       unit_type: unitType || null,
     });
 
-    if (insertError) {
-      setError(insertError.message);
+    if (result?.error) {
+      setError(result.error);
       setIsSubmitting(false);
       return;
     }
 
-    router.refresh();
+    onSave();
     onClose();
   };
-
-  const categoryOptions = [
-    { value: "", label: "Select category..." },
-    ...categories.map((c) => ({ value: c.id, label: c.name })),
-  ];
-
-  const subcategoryOptions = [
-    { value: "", label: "Select subcategory..." },
-    ...filteredSubcategories.map((s) => ({ value: s.id, label: s.name })),
-  ];
-
-  const modelOptions = [
-    { value: "", label: "Select model..." },
-    ...filteredModels.map((m) => ({ value: m.id, label: `${m.brand} - ${m.name}` })),
-  ];
 
   const locationOptions = [
     { value: "", label: "Select location..." },
@@ -118,7 +72,7 @@ export function AddConsumableModal({
             <div className="p-2 bg-blue-100 rounded-lg">
               <Package className="w-5 h-5 text-blue-600" />
             </div>
-            <h2 className="text-lg font-semibold text-[#242424]">Add Consumable</h2>
+            <h2 className="text-lg font-semibold text-[#242424]">Edit Consumable</h2>
           </div>
           <button onClick={onClose} className="p-2 hover:bg-[#f4f4f5] rounded-lg">
             <X className="w-5 h-5 text-[#71717a]" />
@@ -132,31 +86,10 @@ export function AddConsumableModal({
             </div>
           )}
 
-          <Select
-            label="Category"
-            options={categoryOptions}
-            value={selectedCategory}
-            onChange={setSelectedCategory}
-            placeholder="Select category..."
-          />
-
-          <Select
-            label="Subcategory"
-            options={subcategoryOptions}
-            value={selectedSubcategory}
-            onChange={setSelectedSubcategory}
-            placeholder="Select subcategory..."
-            disabled={!selectedCategory}
-          />
-
-          <Select
-            label="Model"
-            options={modelOptions}
-            value={selectedModel}
-            onChange={setSelectedModel}
-            placeholder="Select model..."
-            disabled={!selectedSubcategory}
-          />
+          <div className="bg-[#f4f4f5] rounded-lg p-3">
+            <p className="text-sm font-medium text-[#242424]">{consumable.model?.name}</p>
+            <p className="text-xs text-[#71717a]">{consumable.model?.brand} · {consumable.model?.code}</p>
+          </div>
 
           <Select
             label="Location"
@@ -169,7 +102,7 @@ export function AddConsumableModal({
           <div className="grid grid-cols-2 gap-4">
             <Input
               type="number"
-              label="Initial Quantity"
+              label="Quantity"
               value={quantity}
               onChange={(e) => setQuantity(e.target.value)}
               min="0"
@@ -196,7 +129,7 @@ export function AddConsumableModal({
               Cancel
             </Button>
             <Button type="submit" loading={isSubmitting} className="flex-1">
-              Add Consumable
+              Save Changes
             </Button>
           </div>
         </form>

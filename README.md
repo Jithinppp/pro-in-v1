@@ -1,4 +1,4 @@
-# PROIN - Asset Management System
+# PROAMS - Asset Management System
 
 > Professional inventory tracking for AV equipment. Track, manage, and deploy across your organization.
 
@@ -43,7 +43,7 @@
 ### Project Structure
 
 ```
-pro-in-v1/
+proams/
 ├── app/                          # Next.js App Router
 │   ├── page.tsx                  # Login page
 │   ├── admin/                    # Admin dashboard & routes
@@ -161,7 +161,7 @@ Inspired by [Cal.com](https://cal.com) - Minimal, professional, monochrome.
 ```bash
 # Clone the repository
 git clone <repository-url>
-cd pro-in-v1
+cd proams
 
 # Install dependencies
 npm install
@@ -179,7 +179,7 @@ npm run dev
 ```bash
 NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
 NEXT_PUBLIC_SUPABASE_ANON_KEY=your_anon_key
-NEXT_PUBLIC_APP_NAME=PROIN
+NEXT_PUBLIC_APP_NAME=PROAMS
 NEXT_PUBLIC_APP_TAGLINE=Asset Management System
 ```
 

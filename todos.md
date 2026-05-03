@@ -1,4 +1,4 @@
-# PROIN - Asset Management System
+# PROAMS - Asset Management System
 
 ## ✅ Completed Tasks
 
@@ -71,9 +71,10 @@
 
 #### Consumables
 
-- [ ] Consumable stock tracking
-- [ ] Quick adjust buttons (+/-)
-- [ ] Low stock alerts
+- [x] Consumable stock tracking
+- [x] Quick adjust buttons (+/-)
+- [x] CRUD consumables
+- [x] Low stock alerts
 
 #### Kits
 

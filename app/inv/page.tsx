@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { Navbar, StatsCard } from "@/components";
-import { Package, LayoutGrid, MapPin, PackageOpen, Clock, History } from "lucide-react";
+import { Package, LayoutGrid, MapPin, PackageOpen, Clock, History, Box } from "lucide-react";
 
 export default async function InvDashboard() {
   const supabase = await createClient();
@@ -56,6 +56,12 @@ export default async function InvDashboard() {
       title: "Consumables",
       description: "Stock levels for non-serialized items and supplies.",
       href: "/inv/consumables",
+    },
+    {
+      icon: Box,
+      title: "Kits",
+      description: "Bundled equipment packages for quick deployment.",
+      href: "/inv/kits",
     },
   ];
 

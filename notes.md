@@ -67,7 +67,7 @@ app/
 ├── scan/page.tsx
 └── maintenance/page.tsx
 
-## Reusable Components for PROIN:
+## Reusable Components for PROAMS:
 
 Form Elements:
 

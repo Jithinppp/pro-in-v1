@@ -10,7 +10,7 @@ const googleSans = Google_Sans({
 });
 
 export const metadata: Metadata = {
-  title: process.env.NEXT_PUBLIC_APP_NAME || "PROIN",
+  title: process.env.NEXT_PUBLIC_APP_NAME || "PROAMS",
   description: process.env.NEXT_PUBLIC_APP_TAGLINE || "Asset Management System",
 };
 

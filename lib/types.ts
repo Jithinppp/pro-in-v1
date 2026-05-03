@@ -398,3 +398,68 @@ export type Database = {
     }
   }
 }
+
+// Shared interfaces for components
+export interface Category {
+  id: string;
+  name: string;
+}
+
+export interface Subcategory {
+  id: string;
+  name: string;
+  category_id: string;
+}
+
+export interface Model {
+  id: string;
+  name: string;
+  brand: string;
+  subcategory_id: string;
+}
+
+export interface Location {
+  id: string;
+  name: string;
+}
+
+export interface ConsumableItem {
+  id: string;
+  model_id: string;
+  location_id: string;
+  quantity: number;
+  low_stock_threshold: number;
+  unit_type: string | null;
+  model?: { name: string; brand: string; code: string } | null;
+  location?: { name: string } | null;
+}
+
+export interface Asset {
+  id: string;
+  asset_code: string;
+  serial_number: string | null;
+  description: string | null;
+  status: string;
+  condition: string;
+  case_number: string | null;
+  location_id: string | null;
+  is_active: boolean;
+}
+
+export interface MaintenanceLog {
+  id: string;
+  asset_id: string;
+  description: string;
+  performed_by: string;
+  performed_at: string;
+  next_maintenance: string | null;
+}
+
+export interface Attachment {
+  id: string;
+  asset_id: string;
+  name: string;
+  url: string;
+  is_primary: boolean;
+  sort_order: number;
+}

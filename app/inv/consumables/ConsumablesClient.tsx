@@ -2,44 +2,10 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { Navbar, AddConsumableModal, Button } from "@/components";
-import { ArrowLeft, Package, Plus, Minus, Loader2 } from "lucide-react";
-import { adjustConsumableQuantity } from "@/lib/actions/consumables";
-
-interface ConsumableItem {
-  id: string;
-  model_id: string;
-  location_id: string;
-  quantity: number;
-  low_stock_threshold: number;
-  unit_type: string | null;
-  model?: { name: string; brand: string; code: string } | null;
-  location?: { name: string } | null;
-}
-
-interface Category {
-  id: string;
-  name: string;
-}
-
-interface Subcategory {
-  id: string;
-  name: string;
-  category_id: string;
-}
-
-interface Model {
-  id: string;
-  name: string;
-  brand: string;
-  subcategory_id: string;
-}
-
-interface Location {
-  id: string;
-  name: string;
-}
+import { Navbar, AddConsumableModal, EditConsumableModal, DeleteConsumableModal, Button } from "@/components";
+import { ArrowLeft, Package, Plus, Minus, Loader2, Pencil, Trash2 } from "lucide-react";
+import { adjustConsumableQuantity, getConsumables } from "@/lib/actions/consumables";
+import type { ConsumableItem, Category, Subcategory, Model, Location } from "@/lib/types";
 
 export function ConsumablesClient({ 
   consumables: initialConsumables, 
@@ -56,10 +22,11 @@ export function ConsumablesClient({
   models: Model[];
   locations: Location[];
 }) {
-  const router = useRouter();
   const [showAddModal, setShowAddModal] = useState(false);
   const [consumables, setConsumables] = useState(initialConsumables);
   const [adjustingId, setAdjustingId] = useState<string | null>(null);
+  const [editingConsumable, setEditingConsumable] = useState<ConsumableItem | null>(null);
+  const [deletingConsumable, setDeletingConsumable] = useState<ConsumableItem | null>(null);
 
   const lowStockCount = consumables.filter(c => c.quantity <= c.low_stock_threshold).length;
   const inStockCount = consumables.filter(c => c.quantity > c.low_stock_threshold).length;
@@ -78,6 +45,13 @@ export function ConsumablesClient({
     }
     
     setAdjustingId(null);
+  };
+
+  const refreshConsumables = async () => {
+    const result = await getConsumables();
+    if (result?.consumables) {
+      setConsumables(result.consumables);
+    }
   };
 
   return (
@@ -126,8 +100,9 @@ export function ConsumablesClient({
               <tr>
                 <th className="text-left text-xs font-medium text-[#71717a] px-4 py-3">Model</th>
                 <th className="text-left text-xs font-medium text-[#71717a] px-4 py-3">Location</th>
-                <th className="text-center text-xs font-medium text-[#71717a] px-4 py-3 w-24">Qty</th>
+                <th className="text-center text-xs font-medium text-[#71717a] px-4 py-3 w-20">Qty</th>
                 <th className="text-left text-xs font-medium text-[#71717a] px-4 py-3">Status</th>
+                <th className="text-center text-xs font-medium text-[#71717a] px-4 py-3 w-24">+/-</th>
                 <th className="text-right text-xs font-medium text-[#71717a] px-4 py-3 w-24">Actions</th>
               </tr>
             </thead>
@@ -173,7 +148,7 @@ export function ConsumablesClient({
                       )}
                     </td>
                     <td className="px-4 py-3">
-                      <div className="flex items-center justify-end gap-1">
+                      <div className="flex items-center justify-center gap-1">
                         <button
                           onClick={() => handleAdjust(item.id, -1)}
                           disabled={adjustingId === item.id || item.quantity === 0}
@@ -191,6 +166,22 @@ export function ConsumablesClient({
                           ) : (
                             <Plus className="w-4 h-4" />
                           )}
+                        </button>
+                      </div>
+                    </td>
+                    <td className="px-4 py-3">
+                      <div className="flex items-center justify-end gap-1">
+                        <button
+                          onClick={() => setEditingConsumable(item)}
+                          className="p-1.5 rounded bg-blue-100 text-blue-600 hover:bg-blue-200"
+                        >
+                          <Pencil className="w-4 h-4" />
+                        </button>
+                        <button
+                          onClick={() => setDeletingConsumable(item)}
+                          className="p-1.5 rounded bg-red-100 text-red-600 hover:bg-red-200"
+                        >
+                          <Trash2 className="w-4 h-4" />
                         </button>
                       </div>
                     </td>
@@ -215,8 +206,28 @@ export function ConsumablesClient({
           locations={locations}
           onClose={() => {
             setShowAddModal(false);
-            router.refresh();
-          }} 
+            refreshConsumables();
+          }}
+        />
+      )}
+
+      {editingConsumable && (
+        <EditConsumableModal
+          consumable={editingConsumable}
+          categories={categories}
+          subcategories={subcategories}
+          models={models}
+          locations={locations}
+          onClose={() => setEditingConsumable(null)}
+          onSave={refreshConsumables}
+        />
+      )}
+
+      {deletingConsumable && (
+        <DeleteConsumableModal
+          consumable={deletingConsumable}
+          onClose={() => setDeletingConsumable(null)}
+          onDeleted={refreshConsumables}
         />
       )}
     </div>

@@ -1,4 +1,4 @@
--- PROIN Management System Master Schema SUPABASE
+-- PROAMS Management System Master Schema SUPABASE
 -- Database: PostgreSQL (Supabase)
 -- This is the merged industrial-grade schema combining the DB export and the Master Blueprint.
 
@@ -270,9 +270,16 @@ CREATE POLICY "Logistics: Admin/INV manage locations" ON public.storage_location
 -- ASSETS & CONSUMABLES
 CREATE POLICY "Inventory: Read for all" ON public.assets FOR SELECT TO authenticated USING (true);
 CREATE POLICY "Inventory: Read for all" ON public.consumables FOR SELECT TO authenticated USING (true);
+CREATE POLICY "Consumables: INV and Admin can insert" ON public.consumables FOR INSERT TO authenticated WITH CHECK (get_my_role() IN ('INV', 'ADMIN'));
 CREATE POLICY "Inventory: INV and Admin manage" ON public.assets FOR ALL TO authenticated USING (get_my_role() IN ('INV', 'ADMIN'));
 CREATE POLICY "Inventory: Techs update status" ON public.assets FOR UPDATE TO authenticated 
 USING (get_my_role() = 'TECH') WITH CHECK (get_my_role() = 'TECH');
+
+-- KITS
+CREATE POLICY "Kits: Read for all" ON public.kits FOR SELECT TO authenticated USING (true);
+CREATE POLICY "Kits: Read for all" ON public.kit_items FOR SELECT TO authenticated USING (true);
+CREATE POLICY "Kits: INV and Admin manage" ON public.kits FOR ALL TO authenticated USING (get_my_role() IN ('INV', 'ADMIN'));
+CREATE POLICY "Kits: INV and Admin manage items" ON public.kit_items FOR ALL TO authenticated USING (get_my_role() IN ('INV', 'ADMIN'));
 
 -- PROJECTS
 CREATE POLICY "Projects: Read for all" ON public.projects FOR SELECT TO authenticated USING (true);
@@ -413,3 +420,11 @@ DROP TRIGGER IF EXISTS on_attachment_add ON public.asset_attachments;
 CREATE TRIGGER on_attachment_add
 AFTER INSERT OR DELETE ON public.asset_attachments
 FOR EACH ROW EXECUTE FUNCTION public.log_attachment();
+
+
+
+-- KITS
+CREATE POLICY "Kits: Read for all" ON public.kits FOR SELECT TO authenticated USING (true);
+CREATE POLICY "Kits: Read for all" ON public.kit_items FOR SELECT TO authenticated USING (true);
+CREATE POLICY "Kits: INV and Admin manage" ON public.kits FOR ALL TO authenticated USING (get_my_role() IN ('INV', 'ADMIN'));
+CREATE POLICY "Kits: INV and Admin manage items" ON public.kit_items FOR ALL TO authenticated USING (get_my_role() IN ('INV', 'ADMIN'));

@@ -122,8 +122,8 @@ export default async function ActivityPage() {
           </div>
         </div>
 
-        <div className="bg-white border border-[#e4e4e7] rounded-lg overflow-hidden">
-          <table className="w-full">
+        <div className="bg-white border border-[#e4e4e7] rounded-lg overflow-x-auto">
+          <table className="w-full min-w-[500px]">
             <thead className="bg-[#fafafa] border-b border-[#e4e4e7]">
               <tr>
                 <th className="text-left text-xs font-medium text-[#71717a] px-4 py-3">Type</th>

@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { LogoutButton } from "./LogoutButton";
 
-const APP_NAME = process.env.NEXT_PUBLIC_APP_NAME || "PROIN";
+const APP_NAME = process.env.NEXT_PUBLIC_APP_NAME || "PROAMS";
 
 interface NavbarProps {
   email: string;
